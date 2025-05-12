@@ -41,17 +41,48 @@ select c.nom_curso,
 from cursos c order by c.cod_curso desc;
 
 -- Questão 6
-select a.nom_alu from alunos a where a.cod_curso in (
-	select c.cod_curso from cursos c
-	where c.tot_cred > 5
+select a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
+	select tm.mat_alu from turmas_matriculadas tm where tm.cod_disc in (
+		select t.cod_disc from turmas t where t.cod_disc in (
+			select d.cod_disc from disciplinas d
+			where d.qtd_cred > 5
+		)
+	)
 );
 
 -- Questão 7
 select a.mat_alu, a.nom_alu from alunos a where a.mat_alu not in (
-	select tm.mat_alu from turmas_matriculadas tm where tm.ano in (2023)
+	select tm.mat_alu from turmas_matriculadas tm where tm.turma in (
+		select t.turma from turmas t where t.ano between 2022 and 2024
+	)
 );
 
 -- Questão 8
-select a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
+select distinct a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
 	select he.mat_alu from historicos_escolares he where he.faltas > 3
+);
+
+-- Questão 9
+select distinct a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
+	select he.mat_alu from historicos_escolares he where he.media > 7
+);
+
+-- Questão 10
+select a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
+	select tm.mat_alu from turmas_matriculadas tm where tm.cod_disc in (
+		select d.cod_disc from disciplinas d where d.cod_disc in (
+			select t.cod_disc from turmas t where t.cod_prof in (
+				select distinct p.cod_prof from professores p
+			)
+		)
+	)
+);
+
+-- Questão 11
+select a.mat_alu, a.nom_alu from alunos a where a.mat_alu in (
+	select tm.mat_alu from turmas_matriculadas tm where tm.turma in (
+		select t.turma from turmas t where t.cod_prof in (
+			select p.cod_prof from professores p where p.nom_prof like 'João Silva'
+		)
+	)
 );
