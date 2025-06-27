@@ -46,9 +46,29 @@ $$ language sql;
 
 select nome_alunos(911094);
 
--- Serve para inserir um aluno na tabela alunos e retornar a matrícula do aluno inserido
 create or replace function insert_alunos(cod_curso integer, dat_nasc date, tot_cred int, mgp numeric, nom_alu text, email text) returns int as $$
 	insert into alunos(cod_curso, dat_nasc, tot_cred, mgp, nom_alu, email)
 	values (cod_curso, dat_nasc, tot_cred, mgp, nom_alu, email)
 	returning mat_alu;
 $$ language sql;
+
+create or replace function registrar_media_aluno(nome text, n1 numeric, n2 numeric, n3 numeric, n4 numeric) returns void
+as $$
+	declare 
+		id integer;
+		media numeric;
+
+	begin 
+		media := (n1+n2+n3+n4)/4;
+
+		select mat_alu into id from alunos where nom_alu ilike '%'|| nome ||'%';
+
+		if not found then
+			raise exception 'não foi encontrado o(a) aluno %', nome;
+		else
+			update alunos
+				set mgp = media
+			where mat_alu = id;
+		end if;
+	end;
+$$ language plpgsql;
