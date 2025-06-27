@@ -114,3 +114,41 @@ as $$
 $$ language plpgsql;
 
 call crud_cliente(4, 1, 'Jardson'::text, 'Alan'::text, 'jardson@email.com'::text, 2, true, '2024-01-01'::date, 1);
+
+-- Questão 5
+create or replace function update_time() returns trigger
+as $$
+	begin
+		new.ultima_atualizacao := now();
+		return new;
+	end;
+$$ language plpgsql;
+
+create trigger log_insert_filme before insert on filme
+for each row execute function update_time();
+create trigger log_update_filme before update on filme
+for each row execute function update_time();
+
+create trigger log_insert_aluguel before insert on aluguel
+for each row execute function update_time();
+create trigger log_update_aluguel before update on aluguel
+for each row execute function update_time();
+
+create trigger log_insert_inventario before insert on inventario
+for each row execute function update_time();
+create trigger log_update_inventario before update on inventario
+for each row execute function update_time();
+
+create trigger log_insert_funcionario before insert on funcionario
+for each row execute function update_time();
+create trigger log_update_funcionario before update on funcionario
+for each row execute function update_time();
+
+create trigger log_insert_cliente before insert on cliente
+for each row execute function update_time();
+create trigger log_update_cliente before update on cliente
+for each row execute function update_time();
+
+update filme
+set titulo = 'Turma da Mônica'
+where filme_id = 14;
